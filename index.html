@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      table, th, td { border: 1px solid #ccc; border-collapse: collapse; padding: 5px; }
+      th { background-color: #f0f0f0; }
+      input[type="text"], input[type="date"], input[type="number"] { width: 100%; box-sizing: border-box; }
+      button { margin-top: 10px; padding: 5px 10px; }
+    </style>
+  </head>
+  <body>
+    <h2>학교 급식 재료 주문서</h2>
+
+    <label>이메일: <input type="email" id="email"></label><br>
+    <label>거래처명: <input type="text" id="company"></label><br>
+    <label>발신자명: <input type="text" id="name"></label><br>
+    <label>연락처: <input type="text" id="phone"></label><br><br>
+
+    <table id="orderTable">
+      <thead>
+        <tr>
+          <th>No</th><th>급식일</th><th>상품명</th><th>설명</th><th>규격</th>
+          <th>수량</th><th>단위</th><th>납품처</th><th>입고희망일</th><th>비고</th><th>삭제</th>
+        </tr>
+      </thead>
+      <tbody id="orderBody">
+      </tbody>
+    </table>
+
+    <button onclick="addRow()">+ 품목 추가</button>
+    <button onclick="submitOrder()">제출</button>
+
+    <script>
+      let rowCount = 0;
+
+      function addRow() {
+        rowCount++;
+        const tbody = document.getElementById("orderBody");
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${rowCount}</td>
+          <td><input type="date" name="mealDate"></td>
+          <td><input type="text" name="productName"></td>
+          <td><input type="text" name="description"></td>
+          <td><input type="text" name="specification"></td>
+          <td><input type="number" name="quantity"></td>
+          <td><input type="text" name="unit"></td>
+          <td><input type="text" name="deliveryTo"></td>
+          <td><input type="date" name="desiredDate"></td>
+          <td><input type="text" name="note"></td>
+          <td><button onclick="this.parentElement.parentElement.remove()">X</button></td>
+        `;
+        tbody.appendChild(row);
+      }
+
+      function submitOrder() {
+        const email = document.getElementById("email").value.trim();
+        const company = document.getElementById("company").value.trim();
+        const name = document.getElementById("name").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+
+        if (!email || !company || !name || !phone) {
+          alert("📌 발신자 정보를 모두 입력해주세요.");
+          return;
+        }
+
+        const rows = document.querySelectorAll("#orderBody tr");
+        let items = [];
+        let hasError = false;
+
+        rows.forEach((row, index) => {
+          const cells = row.querySelectorAll("input");
+          const item = {
+            mealDate: cells[0].value,
+            productName: cells[1].value,
+            description: cells[2].value,
+            specification: cells[3].value,
+            quantity: cells[4].value,
+            unit: cells[5].value,
+            deliveryTo: cells[6].value,
+            desiredDate: cells[7].value,
+            note: cells[8].value
+          };
+
+          if (!item.mealDate || !item.productName || !item.quantity || !item.deliveryTo) {
+            alert(`🚨 ${index + 1}번째 품목에 필수 항목이 비어 있습니다.`);
+            hasError = true;
+            return;
+          }
+
+          items.push(item);
+        });
+
+        if (hasError) return;
+
+        const scriptUrl = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";  // TODO: Replace this
+
+        fetch(scriptUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: new URLSearchParams({
+            email,
+            company,
+            name,
+            phone,
+            items: JSON.stringify(items)
+          })
+        })
+        .then(res => res.text())
+        .then(msg => {
+          alert(msg);
+          window.scrollTo(0, 0);
+          location.reload();
+        })
+        .catch(err => {
+          alert("❌ 오류 발생: " + err);
+          console.error(err);
+        });
+      }
+
+      window.onload = addRow;
+    </script>
+  </body>
+</html>
