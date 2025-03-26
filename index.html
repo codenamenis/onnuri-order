@@ -1,38 +1,99 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
   <head>
-    <base target="_top">
+    <meta charset="utf-8">
+    <title>학교 급식 재료 주문서</title>
+    <!-- 구글 폰트 (Noto Sans) -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
+    <!-- 부트스트랩 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
-      table, th, td { border: 1px solid #ccc; border-collapse: collapse; padding: 5px; }
-      th { background-color: #f0f0f0; }
-      input[type="text"], input[type="date"], input[type="number"] { width: 100%; box-sizing: border-box; }
-      button { margin-top: 10px; padding: 5px 10px; }
+      body {
+        font-family: 'Noto Sans KR', sans-serif;
+        background-color: #f8f9fa;
+      }
+      h2 {
+        font-weight: 600;
+      }
+      .table thead th {
+        background-color: #f0f0f0;
+      }
+      /* 발신자 정보 레이블 간격 조정 */
+      .info-label {
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+      }
+      .info-input {
+        margin-bottom: 1rem;
+      }
     </style>
   </head>
   <body>
-    <h2>학교 급식 재료 주문서</h2>
+    <div class="container my-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="mb-4">학교 급식 재료 주문서</h2>
 
-    <label>이메일: <input type="email" id="email"></label><br>
-    <label>거래처명: <input type="text" id="company"></label><br>
-    <label>발신자명: <input type="text" id="name"></label><br>
-    <label>연락처: <input type="text" id="phone"></label><br><br>
+          <!-- 발신자 정보 영역 -->
+          <div class="row g-3 mb-3">
+            <div class="col-md-3">
+              <label class="info-label">이메일</label>
+              <input type="email" class="form-control info-input" id="email" placeholder="email@domain.com">
+            </div>
+            <div class="col-md-3">
+              <label class="info-label">거래처명</label>
+              <input type="text" class="form-control info-input" id="company" placeholder="예: 온누리종합식품">
+            </div>
+            <div class="col-md-3">
+              <label class="info-label">발신자명</label>
+              <input type="text" class="form-control info-input" id="name" placeholder="홍길동">
+            </div>
+            <div class="col-md-3">
+              <label class="info-label">연락처</label>
+              <input type="text" class="form-control info-input" id="phone" placeholder="010-1234-5678">
+            </div>
+          </div>
 
-    <table id="orderTable">
-      <thead>
-        <tr>
-          <th>No</th><th>급식일</th><th>상품명</th><th>설명</th><th>규격</th>
-          <th>수량</th><th>단위</th><th>납품처</th><th>입고희망일</th><th>비고</th><th>삭제</th>
-        </tr>
-      </thead>
-      <tbody id="orderBody">
-      </tbody>
-    </table>
+          <!-- 품목 입력 테이블 -->
+          <div class="table-responsive mb-3">
+            <table class="table table-bordered align-middle" id="orderTable">
+              <thead>
+                <tr>
+                  <th style="width:50px;">No</th>
+                  <th style="width:120px;">급식일</th>
+                  <th style="width:160px;">상품명</th>
+                  <th>설명</th>
+                  <th style="width:80px;">규격</th>
+                  <th style="width:80px;">수량</th>
+                  <th style="width:80px;">단위</th>
+                  <th style="width:120px;">납품처</th>
+                  <th style="width:120px;">입고희망일</th>
+                  <th style="width:120px;">비고</th>
+                  <th style="width:50px;">삭제</th>
+                </tr>
+              </thead>
+              <tbody id="orderBody">
+                <!-- 동적 행이 추가됩니다 -->
+              </tbody>
+            </table>
+          </div>
 
-    <button onclick="addRow()">+ 품목 추가</button>
-    <button onclick="submitOrder()">제출</button>
+          <!-- 버튼 영역 -->
+          <div class="mb-3">
+            <button class="btn btn-outline-primary me-2" onclick="addRow()">+ 품목 추가</button>
+            <button class="btn btn-primary" onclick="submitOrder()">제출</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script>
       let rowCount = 0;
+
+      // 페이지 로딩 시 자동으로 1행 추가
+      window.onload = addRow;
 
       function addRow() {
         rowCount++;
@@ -40,16 +101,16 @@
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${rowCount}</td>
-          <td><input type="date" name="mealDate"></td>
-          <td><input type="text" name="productName"></td>
-          <td><input type="text" name="description"></td>
-          <td><input type="text" name="specification"></td>
-          <td><input type="number" name="quantity"></td>
-          <td><input type="text" name="unit"></td>
-          <td><input type="text" name="deliveryTo"></td>
-          <td><input type="date" name="desiredDate"></td>
-          <td><input type="text" name="note"></td>
-          <td><button onclick="this.parentElement.parentElement.remove()">X</button></td>
+          <td><input type="date" class="form-control" name="mealDate"></td>
+          <td><input type="text" class="form-control" name="productName"></td>
+          <td><input type="text" class="form-control" name="description"></td>
+          <td><input type="text" class="form-control" name="specification"></td>
+          <td><input type="number" class="form-control" name="quantity"></td>
+          <td><input type="text" class="form-control" name="unit"></td>
+          <td><input type="text" class="form-control" name="deliveryTo"></td>
+          <td><input type="date" class="form-control" name="desiredDate"></td>
+          <td><input type="text" class="form-control" name="note"></td>
+          <td><button class="btn btn-sm btn-danger" onclick="this.parentElement.parentElement.remove()">X</button></td>
         `;
         tbody.appendChild(row);
       }
@@ -60,6 +121,7 @@
         const name = document.getElementById("name").value.trim();
         const phone = document.getElementById("phone").value.trim();
 
+        // 발신자 정보 유효성 검사
         if (!email || !company || !name || !phone) {
           alert("📌 발신자 정보를 모두 입력해주세요.");
           return;
@@ -71,6 +133,7 @@
 
         rows.forEach((row, index) => {
           const cells = row.querySelectorAll("input");
+
           const item = {
             mealDate: cells[0].value,
             productName: cells[1].value,
@@ -83,6 +146,7 @@
             note: cells[8].value
           };
 
+          // 필수 항목 검사
           if (!item.mealDate || !item.productName || !item.quantity || !item.deliveryTo) {
             alert(`🚨 ${index + 1}번째 품목에 필수 항목이 비어 있습니다.`);
             hasError = true;
@@ -94,34 +158,36 @@
 
         if (hasError) return;
 
-        const scriptUrl = "https://script.google.com/macros/s/AKfycbwY-MGQjuathjK_N5ZKHk5Kc37HMGmLDNX12L65C_9tBop89tA3okfHt6nHoe0vDJyVEw/exec";  // TODO: Replace this
+        // 아래 주소를 본인의 Google Apps Script 웹앱 URL로 교체하세요
+        const scriptUrl = "https://script.google.com/macros/s/AKfycbwY-MGQjuathjK_N5ZKHk5Kc37HMGmLDNX12L65C_9tBop89tA3okfHt6nHoe0vDJyVEw/exec";
 
-fetch(scriptUrl, {
-  method: "POST", 
-  headers: {
-    "Content-Type": "application/x-www-form-urlencoded"  // 올바른 Content-Type 사용
-  },
-  body: new URLSearchParams({
-    email,
-    company,
-    name,
-    phone,
-    items: JSON.stringify(items)  // JSON.stringify로 배열을 전송
-  })
-})
-.then(res => res.text())
-.then(msg => {
-  alert(msg);  // 성공 메시지
-  window.scrollTo(0, 0);  // 화면 이동
-  location.reload();  // 폼 초기화
-})
-.catch(err => {
-  alert("❌ 오류 발생: " + err);
-  console.error(err);
-});
- }
-
-      window.onload = addRow;
+        fetch(scriptUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: new URLSearchParams({
+            email,
+            company,
+            name,
+            phone,
+            items: JSON.stringify(items)
+          })
+        })
+        .then(res => res.text())
+        .then(msg => {
+          alert(msg);
+          window.scrollTo(0, 0);
+          location.reload(); // 입력 폼 초기화
+        })
+        .catch(err => {
+          alert("❌ 오류 발생: " + err);
+          console.error(err);
+        });
+      }
     </script>
+
+    <!-- 부트스트랩 JS (선택) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
