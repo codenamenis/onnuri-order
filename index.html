@@ -96,30 +96,29 @@
 
         const scriptUrl = "https://script.google.com/macros/s/AKfycbwY-MGQjuathjK_N5ZKHk5Kc37HMGmLDNX12L65C_9tBop89tA3okfHt6nHoe0vDJyVEw/exec";  // TODO: Replace this
 
-        fetch(scriptUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          body: new URLSearchParams({
-            email,
-            company,
-            name,
-            phone,
-            items: JSON.stringify(items)
-          })
-        })
-        .then(res => res.text())
-        .then(msg => {
-          alert(msg);
-          window.scrollTo(0, 0);
-          location.reload();
-        })
-        .catch(err => {
-          alert("❌ 오류 발생: " + err);
-          console.error(err);
-        });
-      }
+fetch(scriptUrl, {
+  method: "POST", 
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded"  // 이 부분을 추가
+  },
+  body: new URLSearchParams({
+    email,
+    company,
+    name,
+    phone,
+    items: JSON.stringify(items)  // JSON 배열을 URLSearchParams로 변환하여 전송
+  })
+})
+.then(res => res.text())
+.then(msg => {
+  alert(msg);  // 성공 메시지 출력
+  window.scrollTo(0, 0);  // 화면 위로 이동
+  location.reload(); // 폼 초기화
+})
+.catch(err => {
+  alert("❌ 오류 발생: " + err);
+  console.error(err);
+}); }
 
       window.onload = addRow;
     </script>
